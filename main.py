@@ -119,7 +119,7 @@ def plot_pair_plots(df):
     st.pyplot(plt)
 
 def main():
-    st.set_page_config(layout="wide")
+    
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Info", "Data Frame", "2D Visualization Tab", "K-Means Algorithm", "Decision Tree Algorithm", "Results"])
 
     data = None  # Initialize data variable
@@ -142,7 +142,7 @@ def main():
                 """)
 
     with tab2:
-        st.header("Data Frame")
+        st.header("Σύνολο δεδομένων")
         uploaded_file = st.file_uploader("Choose a file")
 
         if uploaded_file is not None:
@@ -174,7 +174,7 @@ def main():
 
         with tab4:
             if data is not None:
-                st.header("K-Means Algorithm")
+                st.header("Αλγόριθμος K-Means")
                 K = st.number_input("Number of clusters", min_value=1, max_value=10, value=3, step=1)
                 if st.button("Submit"):
                     KMeans_Algorithm(data, int(K))
@@ -184,7 +184,7 @@ def main():
 
         with tab5:
             if data is not None:
-                st.header("Decision Tree Algorithm")
+                st.header("Αλγόριθμος Decision Tree ")
                 DecisionTree_Algorithm(data)
             else:
                 st.header("Δεν βρέθηκε σύνολο δεδομένων.")
@@ -205,7 +205,7 @@ def main():
             st.subheader("Πως λειτουργεί ο αλγόριθμος K-means;")
             st.write(""" 
                     Αντίθετα, ο αλγόριμός K-means, χωρίζει τα δεδομένα σε K ομάδες, όπου κάθε ομάδα έχει ένα κέντρο.
-                    Ο K-means βασίζεται σε μετρίσεις αποστάσεων, συνήθως την ευκλείδεια απόσταση, για να αντιστοιχίσει κάθε δείγμα απο το σύνολο δεδομένων στο πλησιέστερο κέντρο.
+                    Ο K-means βασίζεται σε μετρήσεις αποστάσεων, συνήθως την ευκλείδεια απόσταση, για να αντιστοιχίσει κάθε δείγμα απο το σύνολο δεδομένων στο πλησιέστερο κέντρο.
                     Έτσι, σχηματίζονται οι ομάδες των δεδομένων με βάση τα κοινά χαρακτηριστικά τους.\n
                     \nΧρησιμος για:
                         \n(1)Ομαδοποίηση χωρίς ετικέτες,
