@@ -12,21 +12,17 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.metrics import accuracy_score, silhouette_score
 
 def KMeans_Algorithm(data, K):
-    df = data.copy()
-    X = df.iloc[:, :-1]  # Exclude the last column (assumed to be the target)
+    df = data.copy()#Δημιουργία αντιγράφου του ΣΔ
+    X = df.iloc[:, :-1]  #Διαγραφή της στήλης στόχου
 
-    # Split the data into training and testing sets (though not typically needed for KMeans)
-    X_train, X_test = train_test_split(X, test_size=0.2, random_state=0)
-
-    # Fit the KMeans model on the training set
+    #Εκπαίδευση του αλγορίθμου
     km = KMeans(n_clusters=K, random_state=0)
-    y_predicted = km.fit_predict(X_train)
+    y_predicted = km.fit_predict(X)
 
-    # Add cluster information to the original dataframe for visualization
-    df["cluster"] = km.predict(X)  # Use the full dataset for visualization
+    df["cluster"] = y_predicted
 
-    # Plotting clusters and centroids (using the first two features for simplicity)
-    plt.figure(figsize=(6, 3))  # Adjust size here
+    #Παρουσίαση των clusters
+    plt.figure(figsize=(6, 3))
     plt.scatter(df.iloc[:, 0], df.iloc[:, 1], c=df["cluster"], cmap='viridis')
     plt.scatter(km.cluster_centers_[:, 0], km.cluster_centers_[:, 1], color="red", marker="x", s=100, label="Centroids")
     plt.xlabel(df.columns[0])
@@ -35,53 +31,51 @@ def KMeans_Algorithm(data, K):
     plt.legend()
     st.pyplot(plt)
 
-    # Print lengths of X_train and X_test
-    st.write(f"Length of X_train: {len(X_train)}")
-    st.write(f"Length of X_test: {len(X_test)}")
-
-    # Calculate silhouette score on the training set
-    silhouette = silhouette_score(X_train, y_predicted)
+    # Υπολογισμός της ακρίβειας του αλγορίθμου
+    silhouette = silhouette_score(X, y_predicted)
     st.write(f"Silhouette Score: {silhouette*100:.2f}%")
 
 
 def DecisionTree_Algorithm(data):
-    df = data.copy()
-    X = df.iloc[:, :-1]  # Features
-    y = df.iloc[:, -1]   # Target
+    df = data.copy() #Δημιουργία αντιγράφου του ΣΔ
+    X = df.iloc[:, :-1]  #Χαρακτηριστικά
+    y = df.iloc[:, -1]   #Στήλη στόχος
 
-    # Split the data into training and testing sets
+    #Διαχωρισμός δεδομένων σε train και test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-    # Scale the features
+    #Κλιμάκωση των χαρακτηριστικών
     scaler = MinMaxScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # Train the Decision Tree model
+    #Εκπαίδευση του μοντέλου
     model = DecisionTreeClassifier(max_depth=3, random_state=0)
     model.fit(X_train_scaled, y_train)
 
-    # Plot the decision tree
-    plt.figure(figsize=(10, 5))  # Adjust size here
+    # Παρουσίαση του decision tree
+    plt.figure(figsize=(10, 5))  
     plot_tree(model, feature_names=df.columns[:-1], class_names=[str(i) for i in set(y)], filled=True)
     st.pyplot(plt)
 
-    # Print lengths of X_train and y_train
+    # Εκτύπωση του μήκους των X_train and y_train
     st.write(f"Length of X_train: {len(X_train)}")
     st.write(f"Length of X_test: {len(X_test)}")
 
-    # Calculate accuracy score on the test set
+    # Υπολογισμός της ακρίβειας του αλγορίθμου
     y_pred = model.predict(X_test_scaled)
     accuracy = accuracy_score(y_test, y_pred)
     st.write(f"Accuracy Score: {accuracy*100:.2f}%")
 
 def plot_data_pca(df):
-    X = df.iloc[:, :-1]  # All columns except the last
-    y = df.iloc[:, -1]  # Assuming the last column is the target
+    
+    X = df.iloc[:, :-1]  #Χαρακτηριστικά του ΣΔ εκτός της τελευταία στήλης
+    y = df.iloc[:, -1]  #Χαρακτηριστικά του ΣΔ την τελευταία στήλη 
+    #Παρουσίαση δεδομένων με pca
     pca = PCA(n_components=2)
     components = pca.fit_transform(X)
     
-    plt.figure(figsize=(6, 3))  # Adjust size here
+    plt.figure(figsize=(6, 3)) 
     scatter = plt.scatter(components[:, 0], components[:, 1], c=y, cmap='viridis')
     plt.xlabel('PCA Component 1')
     plt.ylabel('PCA Component 2')
@@ -90,9 +84,11 @@ def plot_data_pca(df):
     st.pyplot(plt)
 
 def plot_data_tsne(df):
-    features = df.iloc[:, :-1]  # All columns except the last
-    target = df.iloc[:, -1]  # The last column (assuming this is the target)
+    
+    features = df.iloc[:, :-1]  #Χαρακτηριστικά του ΣΔ εκτός της τελευταία στήλης
+    target = df.iloc[:, -1]  #Χαρακτηριστικά του ΣΔ την τελευταία στήλη στόχο
 
+    #Παρουσίαση δεδομένων με tsne
     tsne = TSNE(n_components=2, random_state=0)
     projections = tsne.fit_transform(features)
 
@@ -104,9 +100,10 @@ def plot_data_tsne(df):
     st.plotly_chart(fig)
 
 def plot_histograms(df):
+    #Παρουσίαση δεδομένων με ιστόγραμμα
     st.header("Histograms")
-    for column in df.columns[0:2]:  # Exclude the last column if it's the target
-        plt.figure(figsize=(6, 3))  # Adjust size here
+    for column in df.columns[0:2]:
+        plt.figure(figsize=(6, 3)) 
         plt.hist(df[column], bins=30, edgecolor='k')
         plt.title(f'Histogram of {column}')
         plt.xlabel(column)
@@ -114,15 +111,16 @@ def plot_histograms(df):
         st.pyplot(plt)
 
 def plot_pair_plots(df):
+    #Παρουσίαση δεδομένων με pairplots
     st.header("Pair Plots")
-    sns.pairplot(df, hue=df.columns[-1])  # Assuming the last column is the target
+    sns.pairplot(df, hue=df.columns[-1]) 
     st.pyplot(plt)
 
 def main():
     
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Info", "Data Frame", "2D Visualization Tab", "K-Means Algorithm", "Decision Tree Algorithm", "Results"])
 
-    data = None  # Initialize data variable
+    data = None 
 
     with tab1:
         st.header("Πληροφρίες:")
@@ -143,17 +141,18 @@ def main():
 
     with tab2:
         st.header("Σύνολο δεδομένων")
-        uploaded_file = st.file_uploader("Choose a file")
+        uploaded_file = st.file_uploader("Choose a file")#File uploader
 
-        if uploaded_file is not None:
+        if uploaded_file is not None:#Ελεγχος του αρχείου που αναιβάζει ο χρήστης για το αν είναι κενό
 
-            if uploaded_file.name.endswith('.csv'):
+            if uploaded_file.name.endswith('.csv'):#Ελεγχος για τον τύπο αρχείου 
+                #Ανάγνωση και παρουσίαση του συνόλου δεδομένων
                 data = pd.read_csv(uploaded_file)
                 st.dataframe(data, width=800, height=600)
                 st.header("Exploratory Data Analysis (EDA)")
                 plot_histograms(data)
                 plot_pair_plots(data)
-            elif uploaded_file.name.endswith('.xlsx'):
+            elif uploaded_file.name.endswith('.xlsx'):#Ελεγχος για τον τύπο αρχείου
                 data = pd.read_excel(uploaded_file)
                 st.dataframe(data, width=800, height=600)
                 st.header("Exploratory Data Analysis (EDA)")
@@ -164,6 +163,7 @@ def main():
         
 
         with tab3:
+            #Παρουσίαση των δεδομένων με pca και tsne
             if data is not None:
                 st.header("2D Visualizations")
                 plot_data_tsne(data)
@@ -173,6 +173,7 @@ def main():
                 st.write("Δοκιμάστε να ανεβάσετε το σύνολο δεδομένων σα μέσω της καρτέλας 'Data Frame'.")
 
         with tab4:
+            #Εκτέλεση του αλγορίθμου k-means
             if data is not None:
                 st.header("Αλγόριθμος K-Means")
                 K = st.number_input("Number of clusters", min_value=1, max_value=10, value=3, step=1)
@@ -183,6 +184,7 @@ def main():
                 st.write("Δοκιμάστε να ανεβάσετε το σύνολο δεδομένων σα μέσω της καρτέλας 'Data Frame'.")
 
         with tab5:
+            #Εκτέλεση του αλγορίθμου Decision Tree
             if data is not None:
                 st.header("Αλγόριθμος Decision Tree ")
                 DecisionTree_Algorithm(data)
