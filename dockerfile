@@ -1,12 +1,12 @@
 FROM python:3.9
 
-WORKDIR /softwear_technology
+WORKDIR /software-technology
 
-COPY requirements.txt /softwear_technology/
+COPY requirements.txt /software-technology/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /softwear_technology/
+COPY . /software-technology/
 
 EXPOSE 8501
 
